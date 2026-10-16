@@ -1,0 +1,346 @@
+/* 眼部平扫节拍器 —— 样式
+ * 深色底：长时间盯着屏幕做眼部训练时，亮底容易晃眼。
+ * 左=青蓝，右=橙黄，两种颜色对比强烈，一眼就能分清方向。
+ */
+
+:root {
+  --bg:        #0b1020;
+  --surface:   #141a2e;
+  --surface-2: #1d2440;
+  --line:      #2a3352;
+  --text:      #e8ecf7;
+  --muted:     #8b96b8;
+  --left:      #2ea3f2;
+  --right:     #ffa726;
+  --accent:    #4f7cff;
+
+  /* 由 app.js 按当前节拍写入：圆点从一头移到另一头用多久。
+     跳动模式是 0s（瞬间出现），平滑模式约等于一拍的时长。 */
+  --beat-dur: 0s;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "PingFang SC", "Noto Sans CJK SC",
+               "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body { touch-action: manipulation; }
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: max(12px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* 训练时别让长按误选中文字 */
+.topbar, .progress, .stage, .controls, .hint {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ---------- 顶栏 ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+
+/* ---------- 按钮 ---------- */
+button {
+  font: inherit;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.ghost-btn {
+  padding: 9px 14px;
+  font-size: 14px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.ghost-btn:hover  { background: var(--surface-2); color: var(--text); }
+.ghost-btn:active { transform: scale(.97); }
+
+.primary-btn {
+  flex: 1;
+  padding: 17px 20px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 14px;
+  transition: filter .15s, transform .1s, background .15s;
+}
+.primary-btn:hover  { filter: brightness(1.1); }
+.primary-btn:active { transform: scale(.985); }
+.primary-btn.is-paused { background: #ff9f43; }
+
+button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- 设置面板 ---------- */
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.settings[hidden] { display: none; }
+
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field > label { font-size: 14px; color: var(--muted); }
+
+.field input[type="number"] {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 17px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.field .row { display: flex; align-items: center; gap: 12px; }
+.field .row input[type="range"] {
+  flex: 1;
+  height: 28px;
+  accent-color: var(--accent);
+}
+
+.field-note {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.settings :disabled { opacity: .45; cursor: not-allowed; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.chip {
+  padding: 7px 15px;
+  font-size: 14px;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.chip:hover { color: var(--text); border-color: var(--accent); }
+.chip.is-current {
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.segmented { display: flex; gap: 8px; }
+.segmented button {
+  flex: 1;
+  padding: 11px 8px;
+  font-size: 14px;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.segmented button.is-current {
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.settings-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.plan-summary { font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+/* ---------- 进度 ---------- */
+.progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 13px 15px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.stat { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.stat-label { font-size: 12px; color: var(--muted); }
+.stat-value { font-size: 19px; font-variant-numeric: tabular-nums; }
+.stat-value b { font-size: 23px; font-weight: 700; }
+.stat-value i { margin: 0 2px; font-size: 14px; font-style: normal; color: var(--muted); }
+
+.bar {
+  grid-column: 1 / -1;
+  height: 5px;
+  margin-top: 3px;
+  background: var(--bg);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar-fill {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--left), var(--right));
+  border-radius: 999px;
+  transition: width .12s linear;
+}
+
+/* ---------- 视线指示区 ---------- */
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: clamp(150px, 30vh, 300px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* 左右两个半屏，当方向指示灯用 */
+.half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .09s ease-out, box-shadow .09s ease-out;
+}
+.half-left  { left: 0; }
+.half-right { right: 0; }
+
+.half-label {
+  font-size: 46px;
+  font-weight: 700;
+  color: var(--line);
+  transition: color .09s ease-out, transform .09s ease-out;
+  pointer-events: none;
+}
+
+.half-left.is-active {
+  background: color-mix(in srgb, var(--left) 22%, transparent);
+  box-shadow: inset 0 0 60px color-mix(in srgb, var(--left) 28%, transparent);
+}
+.half-left.is-active .half-label { color: var(--left); transform: scale(1.12); }
+
+.half-right.is-active {
+  background: color-mix(in srgb, var(--right) 22%, transparent);
+  box-shadow: inset 0 0 60px color-mix(in srgb, var(--right) 28%, transparent);
+}
+.half-right.is-active .half-label { color: var(--right); transform: scale(1.12); }
+
+/* 跟着节拍走的圆点 */
+.dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(30px, 8vw, 52px);
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 22px rgba(255, 255, 255, .55);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: left var(--beat-dur) linear, opacity .2s;
+}
+.dot.at-left  { left: 16%; }
+.dot.at-right { left: 84%; }
+.dot.is-dim   { opacity: .25; }
+
+/* 预备 / 休息 / 结束 的中央提示 */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(11, 16, 32, .84);
+  backdrop-filter: blur(3px);
+}
+.overlay[hidden] { display: none; }
+
+.overlay-main {
+  font-size: clamp(46px, 15vw, 88px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.overlay-sub { font-size: 15px; letter-spacing: .5px; color: var(--muted); }
+
+/* ---------- 提示文字与底部控制 ---------- */
+.hint {
+  margin: 0;
+  min-height: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: center;
+}
+
+.controls { display: flex; gap: 10px; align-items: stretch; }
+
+.audio-warning {
+  margin: 0;
+  padding: 11px 13px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #ffd8a8;
+  background: #3a2a12;
+  border: 1px solid #6b4d1d;
+  border-radius: 10px;
+}
+.audio-warning[hidden] { display: none; }
+
+/* ---------- 小屏收紧一点 ---------- */
+@media (max-width: 380px) {
+  .half-label  { font-size: 36px; }
+  .stat-value b { font-size: 20px; }
+  .primary-btn { padding: 15px; font-size: 17px; }
+}

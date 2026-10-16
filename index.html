@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b1020">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>眼部平扫节拍器</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <h1>眼部平扫节拍器</h1>
+    <button id="btnSettings" class="ghost-btn" aria-expanded="false" aria-controls="settingsPanel">设置</button>
+  </header>
+
+  <!-- ===== 设置面板 ===== -->
+  <section id="settingsPanel" class="settings" hidden>
+
+    <div class="field">
+      <label for="inBpm">节拍（每分钟多少下）</label>
+      <input id="inBpm" type="number" inputmode="numeric" min="20" max="300" step="1" value="52">
+      <div class="chips">
+        <button type="button" class="chip" data-bpm="40">40</button>
+        <button type="button" class="chip" data-bpm="52">52</button>
+        <button type="button" class="chip" data-bpm="60">60</button>
+        <button type="button" class="chip" data-bpm="80">80</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="inRoundTrips">每组的来回数</label>
+      <input id="inRoundTrips" type="number" inputmode="numeric" min="1" max="200" step="1" value="8">
+    </div>
+
+    <div class="field">
+      <label for="inSets">做几组</label>
+      <input id="inSets" type="number" inputmode="numeric" min="1" max="99" step="1" value="3">
+    </div>
+
+    <div class="field">
+      <label for="inRest">组间休息（秒）</label>
+      <input id="inRest" type="number" inputmode="numeric" min="0" max="600" step="1" value="10">
+    </div>
+
+    <div class="field">
+      <label for="inCountIn">开始前的预备拍（下）</label>
+      <input id="inCountIn" type="number" inputmode="numeric" min="0" max="20" step="1" value="3">
+    </div>
+
+    <div class="field">
+      <label>圆点的显示方式</label>
+      <div class="segmented" id="segMode">
+        <button type="button" data-mode="jump">跳动（看着端点）</button>
+        <button type="button" data-mode="smooth">平滑扫过</button>
+      </div>
+      <p class="field-note">
+        「跳动」：每响一下，圆点直接出现在左端或右端，眼睛跟着跳过去。<br>
+        「平滑扫过」：圆点匀速地从一头移到另一头，眼睛跟着一路扫。
+      </p>
+    </div>
+
+    <div class="field">
+      <label for="inVolume">音量</label>
+      <div class="row">
+        <input id="inVolume" type="range" min="0" max="100" step="5" value="70">
+        <button id="btnPreview" type="button" class="ghost-btn">试听</button>
+      </div>
+    </div>
+
+    <div class="settings-footer">
+      <span class="plan-summary" id="planSummary"></span>
+      <button id="btnDefaults" type="button" class="ghost-btn">恢复默认</button>
+    </div>
+
+  </section>
+
+  <!-- ===== 进度 ===== -->
+  <section class="progress">
+    <div class="stat">
+      <span class="stat-label">组</span>
+      <span class="stat-value"><b id="setNow">–</b><i>/</i><span id="setTotal">3</span></span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">来回</span>
+      <span class="stat-value"><b id="rtNow">–</b><i>/</i><span id="rtTotal">8</span></span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">节拍</span>
+      <span class="stat-value"><b id="bpmNow">52</b><i>BPM</i></span>
+    </div>
+    <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+  </section>
+
+  <!-- ===== 视线指示区 ===== -->
+  <section class="stage" id="stage">
+    <div class="half half-left"  id="panelLeft"><span class="half-label">左</span></div>
+    <div class="half half-right" id="panelRight"><span class="half-label">右</span></div>
+    <div class="dot at-left" id="dot"></div>
+    <div class="overlay" id="overlay" hidden>
+      <div class="overlay-main" id="overlayText"></div>
+      <div class="overlay-sub"  id="overlaySub"></div>
+    </div>
+  </section>
+
+  <p class="hint" id="hint">眼睛看着亮起的一侧。准备好了就点「开始」。</p>
+
+  <!-- ===== 控制 ===== -->
+  <footer class="controls">
+    <button id="btnStart" class="primary-btn">开始</button>
+    <button id="btnReset" class="ghost-btn">重置</button>
+  </footer>
+
+  <p class="audio-warning" id="audioWarning" hidden>
+    这台设备或浏览器不支持网页播放声音。训练动作仍可照做，但听不到节拍声。建议改用 Chrome 或 Edge 打开。
+  </p>
+
+</div>
+
+<noscript>
+  <p style="color:#e8ecf7;padding:24px">这个页面需要开启 JavaScript 才能运行。</p>
+</noscript>
+
+<script src="metronome.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
